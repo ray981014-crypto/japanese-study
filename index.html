@@ -3,187 +3,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>日文五十音訓練 - 機率優化版</title>
+<title>日文五十音大挑戰 - 限時版</title>
 
 <style>
   :root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --accent: #10b981;
-    --primary: #6366f1;
-    --text: #f8fafc;
-    --secondary: #94a3b8;
+    --bg: #f3e5dc;
+    --card: #e6d5c9;
+    --accent: #5d4037;
+    --primary: #cdaa91;
+    --text-main: #3e2723;
+    --success: #6d8b74;
+    --error: #b85c5c;
   }
 
   body {
-    background: radial-gradient(circle at top, #1e1b4b, #0f172a);
-    color: var(--text);
-    font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background: radial-gradient(circle at top, #faf3ed, var(--bg));
+    color: var(--text-main);
+    font-family: 'Helvetica Neue', 'Arial', 'Microsoft JhengHei', sans-serif;
+    margin: 0; padding: 20px;
+    display: flex; flex-direction: column; align-items: center; min-height: 100vh;
   }
 
   .container {
-    background: rgba(30, 41, 59, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    width: 100%;
-    max-width: 450px;
-    padding: 25px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    text-align: center;
+    background: rgba(230, 213, 201, 0.9);
+    backdrop-filter: blur(10px);
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 30px;
+    width: 100%; max-width: 450px;
+    padding: 25px; box-shadow: 0 20px 40px rgba(62, 39, 35, 0.15);
+    text-align: center; position: relative;
+    overflow: hidden;
   }
 
-  .button-group {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
+  /* 計時條 */
+  .timer-bar-bg {
+    width: 100%; height: 6px; background: rgba(0,0,0,0.05);
+    position: absolute; top: 0; left: 0;
+  }
+  #timer-bar {
+    width: 100%; height: 100%; background: var(--accent);
+    transition: width linear;
   }
 
+  h1 { font-size: 1.6rem; font-weight: 900; color: var(--accent); margin: 10px 0; }
+  
+  .stats-group {
+    display: flex; justify-content: space-between;
+    margin-bottom: 15px; font-weight: 800; font-size: 0.9rem; color: var(--accent);
+  }
+
+  .button-group { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
   button {
-    cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    border-radius: 12px;
-    background: var(--card);
-    color: var(--text);
-    padding: 10px 16px;
-    font-size: 0.9rem;
+    cursor: pointer; transition: all 0.2s; border: none;
+    border-radius: 12px; background: var(--primary); color: white;
+    padding: 8px 14px; font-size: 0.9rem; font-weight: 800;
   }
-
-  button.active { background: var(--primary); color: white; box-shadow: 0 0 12px rgba(99, 102, 241, 0.5); }
-  .control-btn { background: #334155; }
-  .control-btn.active { background: var(--accent); }
+  button.active { background: var(--accent); box-shadow: 0 4px 10px rgba(93,64,55,0.3); }
 
   .display-area {
-    background: rgba(15, 23, 42, 0.5);
-    border-radius: 20px;
-    margin: 20px 0;
-    padding: 20px;
+    background: rgba(255, 255, 255, 0.5); border-radius: 24px;
+    margin: 15px 0; padding: 25px; border: 2px solid rgba(255,255,255,0.8);
   }
 
   .kana {
-    font-size: 90px;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #fff;
+    font-size: 110px; height: 130px; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; color: var(--text-main);
+    text-shadow: 2px 2px 0px white, 4px 4px 15px rgba(0,0,0,0.1);
   }
 
-  .sub-controls {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 10px;
-  }
-
-  .sub-btn {
-    background: transparent;
-    border: 1px solid var(--secondary);
-    color: var(--secondary);
-    padding: 5px 12px;
-    font-size: 0.8rem;
-  }
-
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .option-btn {
-    padding: 15px;
-    border-radius: 15px;
-    font-size: 1.2rem;
-    background: #1e293b;
-    border: 1px solid rgba(255,255,255,0.1);
-    color: white;
+    padding: 18px; border-radius: 18px; font-size: 1.4rem; font-weight: 900;
+    background: #fdf6f0; color: var(--accent); box-shadow: 0 4px 8px rgba(0,0,0,0.05);
   }
 
   input {
-    padding: 12px;
-    border-radius: 12px;
-    border: 2px solid var(--primary);
-    background: #0f172a;
-    color: white;
-    width: 80%;
-    font-size: 1.1rem;
-    text-align: center;
-    outline: none;
+    padding: 15px; border-radius: 15px; border: 4px solid var(--primary);
+    width: 80%; font-size: 1.6rem; font-weight: 900; text-align: center; outline: none;
   }
 
-  #result { margin-top: 15px; height: 24px; font-weight: bold; }
+  #result { margin-top: 15px; height: 30px; font-weight: 800; font-size: 1.2rem; }
 
-  .chart-container { margin-top: 30px; width: 100%; max-width: 600px; overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; background: rgba(30, 41, 59, 0.5); font-size: 0.8rem; }
-  th, td { padding: 8px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
+  /* 結算畫面 */
+  #overlay {
+    display: none; position: fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(93, 64, 55, 0.9); z-index: 100;
+    flex-direction: column; justify-content: center; align-items: center; color: white;
+  }
+  #overlay h2 { font-size: 2.5rem; margin-bottom: 10px; }
+  #overlay p { font-size: 1.5rem; margin: 5px; }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-  <h2>五十音訓練 <span id="progress" style="font-size: 0.8rem; color: var(--secondary);"></span></h2>
+<div id="overlay">
+  <h2>挑戰結束</h2>
+  <p id="final-correct">正確：0</p>
+  <p id="final-wrong">錯誤：0</p>
+  <button onclick="restartChallenge()" style="margin-top:20px; padding:15px 40px; font-size:1.2rem; background:var(--primary)">重新挑戰</button>
+</div>
 
-  <div class="button-group">
-    <button id="mode-hiragana" class="mode-btn active" onclick="updateMode('hiragana')">平假名</button>
-    <button id="mode-katakana" class="mode-btn" onclick="updateMode('katakana')">片假名</button>
-    <button id="mode-both" class="mode-btn" onclick="updateMode('both')">混合模式</button>
+<div class="container">
+  <div class="timer-bar-bg"><div id="timer-bar"></div></div>
+  
+  <h1>日文五十音大挑戰</h1>
+
+  <div class="stats-group">
+    <span id="progress-text">題數: 0 / 46</span>
+    <span>✅ <span id="stat-correct" style="color:var(--success)">0</span> / ❌ <span id="stat-wrong" style="color:var(--error)">0</span></span>
   </div>
 
   <div class="button-group">
-    <button id="func-typing" class="control-btn" onclick="updateFunc('typing')">✍️ 打字</button>
-    <button id="func-listening" class="control-btn" onclick="updateFunc('listening')">🔊 聽力</button>
+    <button id="mode-hiragana" class="active" onclick="updateMode('hiragana')">平假名</button>
+    <button id="mode-katakana" onclick="updateMode('katakana')">片假名</button>
+    <button id="mode-both" onclick="updateMode('both')">混合</button>
+    <button id="func-typing" onclick="updateFunc('typing')">✍️ 打字</button>
+    <button id="func-listening" onclick="updateFunc('listening')">🔊 聽力</button>
   </div>
 
   <div class="display-area">
     <div class="kana" id="kana">...</div>
-    <div class="sub-controls">
-      <button class="sub-btn" onclick="replayVoice()">🔁 重聽</button>
-      <button class="sub-btn" onclick="generateQuestion()">⏭️ 下一題</button>
+    <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+      <button onclick="replayVoice()" style="background:#8d7765; padding:5px 15px;">🔁 重聽</button>
     </div>
   </div>
 
   <div id="options" class="grid"></div>
   <div id="typingBox" style="display:none">
-    <input id="typingInput" placeholder="輸入 Romaji..." autocomplete="off">
+    <input id="typingInput" placeholder="..." autocomplete="off">
   </div>
+
   <div id="result"></div>
 </div>
 
-<div class="chart-container">
-  <table id="fullChart">
-    <tbody id="chartBody"></tbody>
-  </table>
-</div>
-
 <script>
-// 完整五十音數據
 const fullData = [
   ['あ','ア','a'],['い','イ','i'],['う','ウ','u'],['え','エ','e'],['お','オ','o'],
   ['か','カ','ka'],['き','キ','ki'],['く','ク','ku'],['け','ケ','ke'],['こ','コ','ko'],
   ['さ','サ','sa'],['し','シ','shi'],['す','ス','su'],['せ','セ','se'],['そ','ソ','so'],
-  ['た','タ','ta'],['ち','チ','chi'],['つ','ツ','tsu'],['て','テ','te'],['と','圖','to'],
+  ['た','タ','ta'],['ち','チ','chi'],['つ','ツ','tsu'],['て','テ','te'],['と','ト','to'],
   ['な','ナ','na'],['に','ニ','ni'],['ぬ','ヌ','nu'],['ね','ネ','ne'],['の','ノ','no'],
   ['は','ハ','ha'],['ひ','ヒ','hi'],['ふ','フ','fu'],['へ','ヘ','he'],['ほ','ホ','ho'],
-  ['ま','マ','ma'],['み','ミ','mi'],['む','ム','mu'],['め','メ','me'],['も','モ','mo'],
+  ['ま','馬','ma'],['み','ミ','mi'],['む','ム','mu'],['め','メ','me'],['も','モ','mo'],
   ['や','ヤ','ya'],['ゆ','ユ','yu'],['よ','ヨ','yo'],
   ['ら','ラ','ra'],['り','リ','ri'],['る','ル','ru'],['れ','レ','re'],['ろ','ロ','ro'],
   ['わ','ワ','wa'],['を','ヲ','wo'],['ん','ン','n']
 ];
 
 let state = {
-  charMode: 'hiragana',
-  isTyping: false,
-  isListening: false,
-  current: null,
-  pool: [] // 題目池
+  charMode: 'hiragana', isTyping: false, isListening: false,
+  current: null, pool: [], 
+  correctCount: 0, wrongCount: 0,
+  timer: null, timeLeft: 5000, limit: 5000 // 每一題 5 秒
 };
 
-// 洗牌演算法 (Fisher-Yates Shuffle)
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -192,71 +165,90 @@ function shuffle(array) {
   return array;
 }
 
-// 刷新題目池：確保每一輪所有音都會出現一次
-function refreshPool() {
-  state.pool = shuffle([...fullData]);
-}
-
 function updateMode(m) {
   state.charMode = m;
-  document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.button-group button').forEach(b => b.classList.remove('active'));
   document.getElementById(`mode-${m}`).classList.add('active');
-  refreshPool(); // 切換模式時重新洗牌
-  generateQuestion();
+  restartChallenge();
 }
 
 function updateFunc(type) {
-  if(type === 'typing') state.isTyping = !state.isTyping;
-  if(type === 'listening') state.isListening = !state.isListening;
-  document.getElementById('func-typing').classList.toggle('active', state.isTyping);
-  document.getElementById('func-listening').classList.toggle('active', state.isListening);
+  state[`is${type.charAt(0).toUpperCase() + type.slice(1)}`] = !state[`is${type.charAt(0).toUpperCase() + type.slice(1)}`];
+  document.getElementById(`func-${type}`).classList.toggle('active');
+  restartChallenge();
+}
+
+function restartChallenge() {
+  state.correctCount = 0; state.wrongCount = 0;
+  state.pool = shuffle([...fullData]);
+  updateStats();
+  document.getElementById('overlay').style.display = 'none';
   generateQuestion();
 }
 
-function generateQuestion() {
-  if (state.pool.length === 0) refreshPool();
-  
-  // 從池子裡「拿走」一個音 (機率絕對平均)
-  state.current = state.pool.pop();
-  
-  // 更新進度顯示
-  document.getElementById('progress').textContent = `(${fullData.length - state.pool.length} / ${fullData.length})`;
+function updateStats() {
+  document.getElementById('stat-correct').textContent = state.correctCount;
+  document.getElementById('stat-wrong').textContent = state.wrongCount;
+  document.getElementById('progress-text').textContent = `題數: ${fullData.length - state.pool.length} / ${fullData.length}`;
+}
 
-  const kanaDiv = document.getElementById('kana');
+function startTimer() {
+  clearInterval(state.timer);
+  const bar = document.getElementById('timer-bar');
+  bar.style.transition = 'none';
+  bar.style.width = '100%';
   
-  // 決定顯示內容
+  setTimeout(() => {
+    bar.style.transition = `width ${state.limit}ms linear`;
+    bar.style.width = '0%';
+  }, 10);
+
+  state.timer = setTimeout(() => {
+    checkAnswer(false, true); // 超時算錯
+  }, state.limit);
+}
+
+function generateQuestion() {
+  if (state.pool.length === 0) {
+    showFinalResult();
+    return;
+  }
+  
+  state.current = state.pool.pop();
+  updateStats();
+  
+  const kanaDiv = document.getElementById('kana');
   if (state.isListening) {
     kanaDiv.textContent = '🔊';
     playVoice(state.current[0]);
   } else {
-    if (state.charMode === 'hiragana') kanaDiv.textContent = state.current[0];
-    else if (state.charMode === 'katakana') kanaDiv.textContent = state.current[1];
-    else kanaDiv.textContent = Math.random() > 0.5 ? state.current[0] : state.current[1];
+    let char = state.current[0];
+    if (state.charMode === 'katakana') char = state.current[1];
+    if (state.charMode === 'both') char = Math.random() > 0.5 ? state.current[0] : state.current[1];
+    kanaDiv.textContent = char;
   }
 
-  // 切換 UI
   if (state.isTyping) {
     document.getElementById('typingBox').style.display = 'block';
     document.getElementById('options').style.display = 'none';
     const input = document.getElementById('typingInput');
-    input.value = '';
-    input.focus();
+    input.value = ''; input.focus();
   } else {
     document.getElementById('typingBox').style.display = 'none';
     document.getElementById('options').style.display = 'grid';
     renderOptions();
   }
   document.getElementById('result').textContent = '';
+  startTimer();
 }
 
 function renderOptions() {
   let opts = [state.current];
   while(opts.length < 4) {
     const r = fullData[Math.floor(Math.random() * fullData.length)];
-    if(!opts.includes(r)) opts.push(r);
+    if(!opts.some(o => o[2] === r[2])) opts.push(r);
   }
   shuffle(opts);
-
   const container = document.getElementById('options');
   container.innerHTML = '';
   opts.forEach(o => {
@@ -268,44 +260,45 @@ function renderOptions() {
   });
 }
 
-function checkAnswer(isCorrect) {
+function checkAnswer(isCorrect, isTimeout = false) {
+  clearInterval(state.timer);
   const res = document.getElementById('result');
-  if(isCorrect) {
-    res.innerHTML = '<span style="color:var(--accent)">✅ 正確！</span>';
-    setTimeout(generateQuestion, 800);
+  
+  if (isCorrect) {
+    state.correctCount++;
+    res.innerHTML = `<span style="color:var(--success)">✨ 正確！</span>`;
+    setTimeout(generateQuestion, 600);
   } else {
-    res.innerHTML = `<span style="color:#f43f5e">❌ 正解：${state.current[2]}</span>`;
+    state.wrongCount++;
+    res.innerHTML = isTimeout ? 
+      `<span style="color:var(--error)">⏰ 超時！正確是 ${state.current[2]}</span>` : 
+      `<span style="color:var(--error)">❌ 錯誤！正確是 ${state.current[2]}</span>`;
+    setTimeout(generateQuestion, 1200);
   }
 }
 
-// 支援多種拼音寫法
-function normalize(s) {
-  return s.replace('si','shi').replace('tu','tsu').replace('ti','chi').replace('hu','fu');
+function showFinalResult() {
+  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('final-correct').textContent = `正確：${state.correctCount}`;
+  document.getElementById('final-wrong').textContent = `錯誤：${state.wrongCount}`;
 }
 
 function playVoice(text) {
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ja-JP';
-  u.rate = 0.35; 
+  u.lang = 'ja-JP'; u.rate = 0.4;
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
-
 function replayVoice() { if(state.current) playVoice(state.current[0]); }
 
 document.getElementById('typingInput').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
-    const input = normalize(e.target.value.toLowerCase().trim());
-    const target = normalize(state.current[2]);
-    checkAnswer(input === target);
+    const input = e.target.value.toLowerCase().trim();
+    checkAnswer(input === state.current[2] || (state.current[2] === 'shi' && input === 'si') || (state.current[2] === 'chi' && input === 'ti') || (state.current[2] === 'tsu' && input === 'tu'));
   }
 });
 
-// 初始化
-refreshPool();
-generateQuestion();
-
-// 繪製表格略 (保持之前的邏輯)...
+restartChallenge();
 </script>
 </body>
 </html>
